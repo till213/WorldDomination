@@ -15,6 +15,16 @@ Yes, that's not the first remake. But I had this one in mind since I graduated, 
 
 So my main motivation is to dig into compute shaders, graphic shaders in general, physics and - who knows - eventually a multiplayer network support.
 
+# Progress
+
+The project is in its very beginning. Very basic terrain rendering using a geometry shader and using a sinus-based terrain generation is in place. Very crude physics let you control the placeholder ship in any direction, teleporting you to the opposite border each time you "fly off" over the border.
+
+Next up:
+
+* Replace the geometry shader by either a compute shader, or a "moving height map texture" based vertex shader (in order to get Metal support on Mac)
+* Work on the terrain details and colours
+
+
 # Credits
 
 The original game Zarch / Virus by David Braben, 1987.
@@ -25,5 +35,5 @@ The code is under MIT license.
 
 # References
 
-(https://en.wikipedia.org/wiki/Zarch)
-(https://www.myabandonware.com/game/virus-jx)
+* https://en.wikipedia.org/wiki/Zarch
+* https://www.myabandonware.com/game/virus-jx
