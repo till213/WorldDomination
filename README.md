@@ -17,7 +17,7 @@ So my main motivation is to dig into compute shaders, graphic shaders in general
 
 # Progress
 
-The project is in its very beginning. Very basic terrain rendering using a geometry shader and using a sinus-based terrain generation is in place. Very crude physics let you control the placeholder ship in any direction, teleporting you to the opposite border each time you "fly off" over the border.
+The project is at its very beginning. Very basic terrain rendering using a geometry shader and using a sinus-based terrain generation is in place. Very crude physics let you control the placeholder ship in any direction, teleporting you to the opposite border each time you "fly off" over the border.
 
 Next up:
 
