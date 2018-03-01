@@ -96,13 +96,13 @@ Shader "Unlit/RepeatingTerrainShader"
                     v.vertex = mul(UNITY_MATRIX_VP, float4(input[i].vertex.x + offsetX, input[i].vertex.y, input[i].vertex.z + offsetZ, input[i].vertex.w));
                     if (_Debug == 1) {
 	                    if (offsetX == 0.0f && offsetZ == 0.0f) {
-	                        test.color = input[i].color;
+	                      v.color = input[i].color;
 	                    } else if (offsetX != 0.0f && offsetZ == 0.0f) {
-	                      test.color = float4(255, 255, 0, 255);
+	                      v.color = float4(255, 255, 0, 255);
 	                    } else if (offsetX == 0.0f && offsetZ != 0.0f) {
-	                      test.color = float4(0, 255, 255, 255);
+	                      v.color = float4(0, 255, 255, 255);
 	                    } else {
-	                      test.color = float4(255, 0, 255, 255);
+	                      v.color = float4(255, 0, 255, 255);
 	                    }
 	                } else {
                       v.color = input[i].color;
