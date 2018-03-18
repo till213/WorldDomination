@@ -7,56 +7,26 @@ public class TerrainFunction {
 	public float[,] Elevation { get; set; }
 	public Color32[,] TileColors { get; set; }
 
-	[Range(0f, 10f)]
-	public float k = 1f;
+	float Evaluate (float x, ContourParameter contourParameter) {
 
-	[Range(0f, 50f)]
-	public float maxHeight = 10f;
+		float y = contourParameter.amplitude1 * Mathf.Sin (contourParameter.frequency1 * (x + contourParameter.offset1))
+			+ contourParameter.amplitude2 * Mathf.Sin (contourParameter.frequency2 * (x + contourParameter.offset2))
+			+ contourParameter.amplitude3 * Mathf.Sin (contourParameter.frequency3 * (x + contourParameter.offset3))
+			+ contourParameter.amplitude4 * Mathf.Sin (contourParameter.frequency4 * (x + contourParameter.offset4));
 
-	[Range(-1.0f, 1.0f)]
-	public float amplitude1 = 0.25f;
-	[Range(0.0f, 10.0f)]
-	public float frequency1 = 1f;
-	[Range(-3f, 3f)]
-	public float offset1 = 0f;
-	float offset1Increment;
+		//y = Mathf.Sin (x);
 
-	[Range(-1.0f, 1.0f)]
-	public float amplitude2 = 0.25f;
-	float amplitude2Increment;
-	[Range(0.0f, 10.0f)]
-	public float frequency2 = 2f;
-	[Range(-3f, 3f)]
-	public float offset2 = 0f;
-	float offset2Increment;
-
-	[Range(-1.0f, 1.0f)]
-	public float amplitude3 = 0.25f;
-	[Range(0.0f, 10.0f)]
-	public float frequency3 = 1f;
-	[Range(-3f, 3f)]
-	public float offset3 = 0.5f;
-	float offset3Increment;
-
-	[Range(-1.0f, 1.0f)]
-	public float amplitude4 = 0.25f;
-	[Range(0.0f, 10.0f)]
-	public float frequency4 = 2f;
-	[Range(-3f, 3f)]
-	public float offset4 = 1f;
-	float offset4Increment;
-
-	float Evaluate (float x,TerrainParameter terrainParameter) {
-		float y = terrainParameter.amplitude1 * Mathf.Sin (terrainParameter.frequency1 * (terrainParameter.k * x + terrainParameter.offset1 + offset1Increment))
-			+ (terrainParameter.amplitude2 + amplitude2Increment) * Mathf.Sin (terrainParameter.frequency2 * (terrainParameter.k * x + terrainParameter.offset2 + offset2Increment))
-			+ terrainParameter.amplitude3 * Mathf.Sin (terrainParameter.frequency3 * (terrainParameter.k * x + terrainParameter.offset3 + offset3Increment))
-			+ terrainParameter.amplitude4 * Mathf.Sin (terrainParameter.frequency4 * (terrainParameter.k * x + terrainParameter.offset4 + offset4Increment));
-		return y;
+	    return y;
 	}
 
 	public void Create(TerrainParameter terrainParameter) {
 
-		float[,] elevation = new float[terrainParameter.nofTiles + 1, terrainParameter.nofTiles + 1];
+		int NofPoints = terrainParameter.nofTiles + 1;
+
+		float[,] contourLinesX;
+		float[,] contourLinesZ;
+
+		float[,] elevation = new float[NofPoints, NofPoints];
 		Color32[,] tileColors = new Color32[terrainParameter.nofTiles, terrainParameter.nofTiles];
 
 		float x0 = -Mathf.PI;
@@ -64,54 +34,161 @@ public class TerrainFunction {
 		float dx = (2f * Mathf.PI) / terrainParameter.nofTiles;
 		float dz = dx;
 
-		float z = z0;
-		for (int v = 0; v < terrainParameter.nofTiles + 1; ++v) {
+		int nofContourLines = terrainParameter.nofPatches + 1;
+
+		// Contour lines X
+		contourLinesX = new float[nofContourLines, NofPoints];
+		for (int p = 0; p < nofContourLines - 1; ++p) {
+
+			ContourParameter contourParameter;
+
+			contourParameter.amplitude1 = Random.value;
+			contourParameter.frequency1 = 1;
+			contourParameter.offset1 = Random.value;
+
+			contourParameter.amplitude2 = Random.value;
+			contourParameter.frequency2 = 2;
+			contourParameter.offset2 = Random.value;
+
+			contourParameter.amplitude3 = Random.value;
+			contourParameter.frequency3 = 4;
+			contourParameter.offset3 = Random.value;
+
+			contourParameter.amplitude4 = Random.value;
+			contourParameter.frequency4 = 8;
+			contourParameter.offset4 = Random.value;
 
 			float x = x0;
+			for (int u = 0; u < NofPoints; ++u) {
 
-			offset1Increment = Mathf.Sin(z);
-			offset2Increment = Mathf.Sin(z);
-			offset3Increment = Mathf.Cos(z);
-			offset4Increment = Mathf.Sin(z);
-			amplitude2Increment = Mathf.Cos(z);
-
-			for (int u = 0; u < terrainParameter.nofTiles + 1; ++u) {
-
-				float y = Evaluate(x, terrainParameter);
-				elevation [u, v] = y;
+				float y = Evaluate (x, contourParameter);
+				contourLinesX [p, u] = y;
 
 				x += dx;
-				if (u > 0 && v > 0) {
 
-					if (y < -0.2) {
-						tileColors [u - 1, v - 1] = new Color32 (
-							0,
-							0,
-							(byte)((y + 1f) / 0.8f * 255f),
-							255);
-					} else if (y < 0.2) {
+			} // x
+
+		}
+
+		// Contour lines Z
+		contourLinesZ = new float[nofContourLines, NofPoints];
+		for (int o = 0; o < nofContourLines - 1; ++o) {
+
+			ContourParameter contourParameter;
+
+			contourParameter.amplitude1 = Random.value;
+			contourParameter.frequency1 = 1;
+			contourParameter.offset1 = Random.value;
+
+			contourParameter.amplitude2 = Random.value;
+			contourParameter.frequency2 = 2;
+			contourParameter.offset2 = Random.value;
+
+			contourParameter.amplitude3 = Random.value;
+			contourParameter.frequency3 = 4;
+			contourParameter.offset3 = Random.value;
+
+			contourParameter.amplitude4 = Random.value;
+			contourParameter.frequency4 = 8;
+			contourParameter.offset4 = Random.value;
+
+			float z = z0;
+			for (int v = 0; v < NofPoints; ++v) {
+
+				float y = Evaluate (z, contourParameter);
+				contourLinesZ[o, v] = y;
+
+				z += dz;
+
+			} // z
+
+		}
+
+		// Last contour line identical to first one
+		for (int u = 0; u < NofPoints; ++u) {
+			contourLinesX [nofContourLines - 1, u] = contourLinesZ [0, u];
+		} // z
+
+		// Last contour line identical to first one
+		for (int v = 0; v < NofPoints; ++v) {
+			contourLinesZ [nofContourLines - 1, v] = contourLinesZ [0, v];
+		} // z
+			
+		int nofTilesPerPatch = terrainParameter.nofTiles / terrainParameter.nofPatches;
+
+		for (int p = 0; p < terrainParameter.nofPatches; ++p) {
+
+			for (int v = p * nofTilesPerPatch; v < p * nofTilesPerPatch + nofTilesPerPatch; ++v) {
+
+				for (int o = 0; o < terrainParameter.nofPatches; ++o) {
+
+					float t = (float)(v % nofTilesPerPatch) / (float)nofTilesPerPatch;
+
+					for (int u = o * nofTilesPerPatch; u < o * nofTilesPerPatch + nofTilesPerPatch; ++u) {
 						
-						tileColors [u - 1, v - 1] = new Color32 (
-							255,
-							255,
-							0,
-							255);
-					} else {
-						tileColors [u - 1, v - 1] = new Color32 (
-							0,
-							(byte)((y -0.2f) / 0.8f * 100 + 155),
-							0,
-							255);
+						float s = (float)(u % nofTilesPerPatch) / (float)nofTilesPerPatch;
+					
+						float y = contourLinesX [p, u] * (1.0f - t) + contourLinesX [p + 1, u] * t +
+						          contourLinesZ [o, v] * (1.0f - s) + contourLinesZ [o + 1, v] * s;
+
+						elevation [u, v] = y;
+
+						if (u > 0 && v > 0) {
+
+							if (y < -0.2) {
+								tileColors [u - 1, v - 1] = new Color32 (
+									0,
+									0,
+									(byte)((y + 1f) / 0.8f * 255f),
+									255);
+							} else if (y < 0.2) {
+								tileColors [u - 1, v - 1] = new Color32 (
+									255,
+									255,
+									0,
+									255);
+							} else {
+								tileColors [u - 1, v - 1] = new Color32 (
+									0,
+									(byte)((y -0.2f) / 0.8f * 100 + 155),
+									0,
+									255);
+							}
+
+						}
+
 					}
 
 				}
 
-			} // x
+			}
 
-			z += dz;
+		}
 
-		} // z
-
+		// Border lines
+		for (int u = 0; u < NofPoints; ++u) {
+			float y = elevation [u, 0];
+			elevation [u, NofPoints - 1] = y;
+			if (u > 0) {
+				tileColors [u - 1, terrainParameter.nofTiles - 1] = new Color32 (
+					0,
+					255,
+					255,
+					255);
+			}
+		}
+		for (int v = 0; v < NofPoints; ++v) {
+			float y = elevation [0, v];
+			elevation [NofPoints - 1, v] = y;
+			if (v > 0) {
+				tileColors [terrainParameter.nofTiles - 1, v - 1] = new Color32 (
+					255,
+					255,
+					0,
+					255);
+			}
+		}
+			
 		this.Elevation = elevation;
 		this.TileColors = tileColors;
 

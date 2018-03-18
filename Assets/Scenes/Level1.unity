@@ -145,18 +145,30 @@ MonoBehaviour:
   k: 1
   developer: 0
   maxHeight: 10
-  amplitude1: 0.25
-  frequency1: 1
-  offset1: 0
-  amplitude2: 0.25
-  frequency2: 2
-  offset2: 0
-  amplitude3: 0.25
-  frequency3: 1
-  offset3: 0.5
-  amplitude4: 0.25
-  frequency4: 2
-  offset4: 1
+  amplitudeX1: 1
+  frequencyX1: 1
+  offsetX1: 0
+  amplitudeX2: 0
+  frequencyX2: 0
+  offsetX2: 0
+  amplitudeX3: 0
+  frequencyX3: 0
+  offsetX3: 0
+  amplitudeX4: 0
+  frequencyX4: 0
+  offsetX4: 0
+  amplitudeZ1: 0
+  frequencyZ1: 0
+  offsetZ1: 0
+  amplitudeZ2: 0
+  frequencyZ2: 0
+  offsetZ2: 0
+  amplitudeZ3: 0
+  frequencyZ3: 0
+  offsetZ3: 0
+  amplitudeZ4: 0
+  frequencyZ4: 0
+  offsetZ4: 0
 --- !u!23 &470025390
 MeshRenderer:
   m_ObjectHideFlags: 0

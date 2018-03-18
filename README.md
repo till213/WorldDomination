@@ -37,3 +37,12 @@ The code is under MIT license.
 
 * https://en.wikipedia.org/wiki/Zarch
 * https://www.myabandonware.com/game/virus-jx
+
+Other people porting code - including optimising the original Zarch code :)
+
+* People optimising the original code :) http://stardot.org.uk/forums/viewtopic.php?f=29&t=10313
+
+* Another developers discussion:
+https://forum.thegamecreators.com/thread/176733
+* Actual game footage: https://www.youtube.com/watch?v=xrN2soK60bA
+* More about the original Zarch: https://wikivisually.com/wiki/Zarch

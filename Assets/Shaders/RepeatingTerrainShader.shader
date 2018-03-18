@@ -5,7 +5,7 @@ Shader "Unlit/RepeatingTerrainShader"
 	Properties
 	{
 		//_MainTex ("Texture", 2D) = "white" {}
-		_WorldSize ("World Size", Range(0,513)) = 127
+		_WorldSize ("World Size", Range(0,513)) = 128
 		_Debug ("Debug", Range(0,1)) = 0
 	}
 	SubShader
