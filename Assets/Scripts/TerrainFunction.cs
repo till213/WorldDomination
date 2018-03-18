@@ -7,20 +7,18 @@ public class TerrainFunction {
 	public float[,] Elevation { get; set; }
 	public Color32[,] TileColors { get; set; }
 
-	float Evaluate (float x, ContourParameter contourParameter) {
-
-		float y = contourParameter.amplitude1 * Mathf.Sin (contourParameter.frequency1 * (x + contourParameter.offset1))
-			+ contourParameter.amplitude2 * Mathf.Sin (contourParameter.frequency2 * (x + contourParameter.offset2))
-			+ contourParameter.amplitude3 * Mathf.Sin (contourParameter.frequency3 * (x + contourParameter.offset3))
-			+ contourParameter.amplitude4 * Mathf.Sin (contourParameter.frequency4 * (x + contourParameter.offset4));
-
-		//y = Mathf.Sin (x);
+	float Evaluate (float x, ContourParameter contourParameter)
+	{
+		float y = contourParameter.weight1 * (contourParameter.amplitude1 * Mathf.Sin (contourParameter.frequency1 * (x + contourParameter.offset1)))
+			+ contourParameter.weight2 * (contourParameter.amplitude2 * Mathf.Sin (contourParameter.frequency2 * (x + contourParameter.offset2)))
+			+ contourParameter.weight3 * (contourParameter.amplitude3 * Mathf.Sin (contourParameter.frequency3 * (x + contourParameter.offset3)))
+			+ contourParameter.weight4 * (contourParameter.amplitude4 * Mathf.Sin (contourParameter.frequency4 * (x + contourParameter.offset4)));
 
 	    return y;
 	}
 
-	public void Create(TerrainParameter terrainParameter) {
-
+	public void Create(TerrainParameter terrainParameter)
+	{
 		int NofPoints = terrainParameter.nofTiles + 1;
 
 		float[,] contourLinesX;
@@ -45,18 +43,22 @@ public class TerrainFunction {
 			contourParameter.amplitude1 = Random.value;
 			contourParameter.frequency1 = 1;
 			contourParameter.offset1 = Random.value;
+			contourParameter.weight1 = terrainParameter.weight1;
 
 			contourParameter.amplitude2 = Random.value;
 			contourParameter.frequency2 = 2;
 			contourParameter.offset2 = Random.value;
+			contourParameter.weight2 = terrainParameter.weight2;
 
 			contourParameter.amplitude3 = Random.value;
 			contourParameter.frequency3 = 4;
 			contourParameter.offset3 = Random.value;
+			contourParameter.weight3 = terrainParameter.weight3;
 
 			contourParameter.amplitude4 = Random.value;
 			contourParameter.frequency4 = 8;
 			contourParameter.offset4 = Random.value;
+			contourParameter.weight4 = terrainParameter.weight4;
 
 			float x = x0;
 			for (int u = 0; u < NofPoints; ++u) {
@@ -79,18 +81,22 @@ public class TerrainFunction {
 			contourParameter.amplitude1 = Random.value;
 			contourParameter.frequency1 = 1;
 			contourParameter.offset1 = Random.value;
+			contourParameter.weight1 = terrainParameter.weight1;
 
 			contourParameter.amplitude2 = Random.value;
 			contourParameter.frequency2 = 2;
 			contourParameter.offset2 = Random.value;
+			contourParameter.weight2 = terrainParameter.weight2;
 
 			contourParameter.amplitude3 = Random.value;
 			contourParameter.frequency3 = 4;
 			contourParameter.offset3 = Random.value;
+			contourParameter.weight3 = terrainParameter.weight3;
 
 			contourParameter.amplitude4 = Random.value;
 			contourParameter.frequency4 = 8;
 			contourParameter.offset4 = Random.value;
+			contourParameter.weight4 = terrainParameter.weight4;
 
 			float z = z0;
 			for (int v = 0; v < NofPoints; ++v) {
@@ -106,13 +112,13 @@ public class TerrainFunction {
 
 		// Last contour line identical to first one
 		for (int u = 0; u < NofPoints; ++u) {
-			contourLinesX [nofContourLines - 1, u] = contourLinesZ [0, u];
-		} // z
+			contourLinesX [nofContourLines - 1, u] = contourLinesX [0, u];
+		}
 
 		// Last contour line identical to first one
 		for (int v = 0; v < NofPoints; ++v) {
 			contourLinesZ [nofContourLines - 1, v] = contourLinesZ [0, v];
-		} // z
+		}
 			
 		int nofTilesPerPatch = terrainParameter.nofTiles / terrainParameter.nofPatches;
 

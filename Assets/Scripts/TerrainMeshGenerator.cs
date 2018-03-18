@@ -10,6 +10,18 @@ public class TerrainMeshGenerator : MonoBehaviour {
 	[Range(0f, 50f)]
 	public float maxHeight = 10f;
 
+	[Range(0, 1000)]
+	public int seed = 42;
+
+	[Range(0f, 10f)]
+	public float weight1 = 0.4f;
+	[Range(0f, 10f)]
+	public float weight2 = 0.3f;
+	[Range(0f, 10f)]
+	public float weight3 = 0.2f;
+	[Range(0f, 10f)]
+	public float weight4 = 0.1f;
+
 	// 128 tiles in each dimension (128 x 128)
 	// Note: maximum triangle count per mesh: 65'535
 	public const int NofTiles = 128; // Must be a multiple of NofPatches
@@ -33,6 +45,10 @@ public class TerrainMeshGenerator : MonoBehaviour {
 		TerrainParameter terrainParameter;
 		terrainParameter.nofTiles = NofTiles;
 		terrainParameter.nofPatches = NofPatches;
+		terrainParameter.weight1 = weight1;
+		terrainParameter.weight2 = weight2;
+		terrainParameter.weight3 = weight3;
+		terrainParameter.weight4 = weight4;
 
 		TerrainFunction terrainFunction = new TerrainFunction ();
 		terrainFunction.Create (terrainParameter);
@@ -106,6 +122,7 @@ public class TerrainMeshGenerator : MonoBehaviour {
 	void Start () {
 
 		meshFilter = GetComponent<MeshFilter>();
+		Random.InitState (seed);
 		UpdateTerrain ();
 		meshFilter.mesh = mesh;
 
@@ -119,6 +136,7 @@ public class TerrainMeshGenerator : MonoBehaviour {
 	void Update () {
 
 		if (developer) {
+			Random.InitState (seed);
 			UpdateTerrain ();
 			meshFilter.mesh = mesh;
 			meshCollider.sharedMesh = mesh;
