@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(MeshFilter))]
-public class TerrainMeshGenerator : MonoBehaviour {
-
+public class TerrainMeshGenerator : MonoBehaviour
+{
 	public bool developer = false;
 
 	[Range(0f, 50f)]
@@ -12,6 +12,9 @@ public class TerrainMeshGenerator : MonoBehaviour {
 
 	[Range(0, 1000)]
 	public int seed = 42;
+
+	[Range(-1.0f, 1.0f)]
+	public float seaLevel = -0.2f;
 
 	[Range(0f, 10f)]
 	public float weight1 = 0.4f;
@@ -49,6 +52,7 @@ public class TerrainMeshGenerator : MonoBehaviour {
 		terrainParameter.weight2 = weight2;
 		terrainParameter.weight3 = weight3;
 		terrainParameter.weight4 = weight4;
+		terrainParameter.seaLevel = seaLevel;
 
 		TerrainFunction terrainFunction = new TerrainFunction ();
 		terrainFunction.Create (terrainParameter);
