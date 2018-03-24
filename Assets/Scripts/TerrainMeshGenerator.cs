@@ -70,10 +70,10 @@ public class TerrainMeshGenerator : MonoBehaviour
 			float x = x0;
 			for (int u = 0; u < terrainParameter.nofTiles; ++u) {
 
-				float y1 = elevation [u,     v    ];
-				float y2 = elevation [u + 1, v    ];
-				float y3 = elevation [u + 1, v + 1];
-				float y4 = elevation [u,     v + 1];
+				float y1 = elevation [u,     v    ] * maxHeight;
+				float y2 = elevation [u + 1, v    ] * maxHeight;
+				float y3 = elevation [u + 1, v + 1] * maxHeight;
+				float y4 = elevation [u,     v + 1] * maxHeight;
 
 				int vertexBaseAddress = NofTiles * v * 4;
 				vertices [vertexBaseAddress + u * 4    ] = new Vector3 (x,      y1, z);      // Bottom left  (0)

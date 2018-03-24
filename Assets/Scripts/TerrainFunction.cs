@@ -11,6 +11,8 @@ public class TerrainFunction
 	public float[,] Elevation { get; set; }
 	public Color32[,] TileColors { get; set; }
 
+	float minElevation, maxElevation;
+
 	float Evaluate (float x, ContourParameter contourParameter)
 	{
 		float y = contourParameter.weight1 * (contourParameter.amplitude1 * Mathf.Sin (contourParameter.frequency1 * (x + contourParameter.offset1)))
@@ -63,12 +65,8 @@ public class TerrainFunction
 
 			float x = x0;
 			for (int u = 0; u < NofPoints; ++u) {
-
-				float y = Evaluate (x, contourParameter);
-				contourLinesX [p, u] = y;
-
+				contourLinesX [p, u] = Evaluate (x, contourParameter);
 				x += dx;
-
 			} // x
 
 		}
@@ -81,12 +79,8 @@ public class TerrainFunction
 
 			float z = z0;
 			for (int v = 0; v < NofPoints; ++v) {
-
-				float y = Evaluate (z, contourParameter);
-				contourLinesZ[o, v] = y;
-
+				contourLinesZ[o, v] = Evaluate (z, contourParameter);
 				z += dz;
-
 			} // z
 
 		}
@@ -105,14 +99,12 @@ public class TerrainFunction
 
 	void Elevate(TerrainParameter terrainParameter)
 	{
-		
-		int NofPoints = terrainParameter.nofTiles + 1;
-
-		float[,] elevation = new float[NofPoints, NofPoints];
-
-
+		int nofPoints = terrainParameter.nofTiles + 1;
+		float[,] elevation = new float[nofPoints, nofPoints];
 		int nofTilesPerPatch = terrainParameter.nofTiles / terrainParameter.nofPatches;
 
+		maxElevation = float.MinValue;
+		minElevation = float.MaxValue;
 		// Interpolate contour lines across X- and Z-direction (Y is up)
 		for (int p = 0; p < terrainParameter.nofPatches; ++p) {
 			for (int v = p * nofTilesPerPatch; v < p * nofTilesPerPatch + nofTilesPerPatch; ++v) {
@@ -121,21 +113,48 @@ public class TerrainFunction
 					for (int u = o * nofTilesPerPatch; u < o * nofTilesPerPatch + nofTilesPerPatch; ++u) {
 						float s = (float)(u % nofTilesPerPatch) / (float)nofTilesPerPatch;
 
-						elevation [u, v] = contourLinesX [p, u] * (1.0f - t) + contourLinesX [p + 1, u] * t +
-							               contourLinesZ [o, v] * (1.0f - s) + contourLinesZ [o + 1, v] * s;
+						// TODO use bicubic interpolation here: http://www.paulinternet.nl/?page=bicubic
+						float y = contourLinesX [p, u] * (1.0f - t) + contourLinesX [p + 1, u] * t +
+							      contourLinesZ [o, v] * (1.0f - s) + contourLinesZ [o + 1, v] * s;
+						elevation [u, v] = y;
+						if (y > maxElevation) {
+							maxElevation = y;
+						} else if (y < minElevation) {
+							minElevation = y;
+						}
 					}
 				}
 			}
 		}
 
 		// Border lines
-		for (int u = 0; u < NofPoints; ++u) {
-			elevation [u, NofPoints - 1] = elevation [u, 0];
+		for (int u = 0; u < nofPoints; ++u) {
+			elevation [u, nofPoints - 1] = elevation [u, 0];
 		}
-		for (int v = 0; v < NofPoints; ++v) {
-			elevation [NofPoints - 1, v] = elevation [0, v];
+		for (int v = 0; v < nofPoints; ++v) {
+			elevation [nofPoints - 1, v] = elevation [0, v];
 		}
 		this.Elevation = elevation;
+	}
+
+	void Normalise(TerrainParameter terrainParameter)
+	{
+		int nofPoints = terrainParameter.nofTiles + 1;
+
+		if (minElevation < -1.0f || maxElevation > 1.0f) {
+
+			float[,] elevation = this.Elevation;
+			float max = Mathf.Max (Mathf.Abs (minElevation), Mathf.Abs (maxElevation));
+
+			for (int v = 0; v < nofPoints; ++v) {
+				for (int u = 0; u < nofPoints; ++u) {
+					elevation [u, v] /= max;
+				}
+			}
+
+			this.Elevation = elevation;
+		}
+
 	}
 
 	void Colorise(TerrainParameter terrainParameter)
@@ -163,9 +182,8 @@ public class TerrainFunction
 	{
 		CreateContours (terrainParameter);
 		Elevate (terrainParameter);
+		Normalise (terrainParameter);
 		Colorise (terrainParameter);
-
-
 	}
 
 }
