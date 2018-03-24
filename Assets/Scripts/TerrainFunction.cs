@@ -17,6 +17,29 @@ public class TerrainFunction {
 	    return y;
 	}
 
+	static float CubicInterpolate(
+		float y0,float y1,
+		float y2,float y3,
+		float mu)
+	{
+		// http://paulbourke.net/miscellaneous/interpolation/
+		float a0, a1, a2, a3, mu2;
+
+		mu2 = mu * mu;
+//		a0 = y3 - y2 - y0 + y1;
+//		a1 = y0 - y1 - a0;
+//		a2 = y2 - y0;
+//		a3 = y1;
+
+		// Catmull-Rom spline
+		a0 = -0.5f*y0 + 1.5f*y1 - 1.5f*y2 + 0.5f*y3;
+		a1 = y0 - 2.5f*y1 + 2f*y2 - 0.5f*y3;
+		a2 = -0.5f*y0 + 0.5f*y2;
+		a3 = y1;
+
+		return (a0 * mu * mu2 + a1 * mu2 + a2 * mu + a3);
+	}
+
 	public void Create(TerrainParameter terrainParameter)
 	{
 		int NofPoints = terrainParameter.nofTiles + 1;
@@ -133,9 +156,23 @@ public class TerrainFunction {
 					for (int u = o * nofTilesPerPatch; u < o * nofTilesPerPatch + nofTilesPerPatch; ++u) {
 						
 						float s = (float)(u % nofTilesPerPatch) / (float)nofTilesPerPatch;
+
+						int p1 = ((p - 1) % nofContourLines + nofContourLines) % nofContourLines;
+						float y1 = CubicInterpolate (contourLinesX [p1, u],
+							           contourLinesX [p, u],
+							           contourLinesX [p + 1, u],
+							           contourLinesX [(p + 2) % nofContourLines, u],
+							           t);
+						p1 = ((o - 1) % nofContourLines + nofContourLines) % nofContourLines;
+						float y2 = CubicInterpolate (contourLinesZ [p1, v],
+							contourLinesX [o, v],
+							contourLinesX [o + 1, v],
+							contourLinesX [(o + 2) % nofContourLines, v],
+							s);
+						float y = y1 + y2;
 					
-						float y = contourLinesX [p, u] * (1.0f - t) + contourLinesX [p + 1, u] * t +
-						          contourLinesZ [o, v] * (1.0f - s) + contourLinesZ [o + 1, v] * s;
+//						float y = contourLinesX [p, u] * (1.0f - t) + contourLinesX [p + 1, u] * t +
+//						          contourLinesZ [o, v] * (1.0f - s) + contourLinesZ [o + 1, v] * s;
 
 						elevation [u, v] = y;
 
