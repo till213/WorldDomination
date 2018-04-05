@@ -1,7 +1,7 @@
 # World Domination
 Remake of the great game Zarch (by David Braben, 1987) using the Unity game engine.
 
-<p align="center"><img src="https://raw.githubusercontent.com/till213/WorldDomination/master/doc/img/WorldDomination-2018.03.png" alt="World Domination screenshot" width="640"></p>
+<p align="center"><img src="https://raw.githubusercontent.com/till213/WorldDomination/master/doc/img/WorldDomination-2018.04.png" alt="World Domination screenshot" width="640"></p>
 
 # Introduction
 
@@ -21,9 +21,8 @@ The project is at its very beginning. Very basic terrain rendering using a geome
 
 Next up:
 
-* Replace the geometry shader by either a compute shader, or a "moving height map texture" based vertex shader (in order to get Metal support on Mac)
 * Work on the terrain details and colours
-
+* Replace the geometry shader by either a compute shader, or a "moving height map texture" based vertex shader (in order to get Metal support on Mac)
 
 # Credits
 
@@ -42,7 +41,6 @@ Other people porting code - including optimising the original Zarch code :)
 
 * People optimising the original code :) http://stardot.org.uk/forums/viewtopic.php?f=29&t=10313
 
-* Another developers discussion:
-https://forum.thegamecreators.com/thread/176733
+* Another developers discussion: https://forum.thegamecreators.com/thread/176733
 * Actual game footage: https://www.youtube.com/watch?v=xrN2soK60bA
 * More about the original Zarch: https://wikivisually.com/wiki/Zarch

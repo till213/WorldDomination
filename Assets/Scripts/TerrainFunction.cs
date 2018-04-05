@@ -4,6 +4,14 @@ using UnityEngine;
 
 public class TerrainFunction
 {
+
+	// Palette
+	static Color32 seaColorBottom = new Color32(0, 0, 28, 255);
+	static Color32 seaColorTop = new Color32(0, 0, 255, 255);
+
+	// As measured from sea level
+	const float BeachLevel = 0.1f;
+
 	ContourParameter contourParameter;
 	float[,] contourLinesX;
 	float[,] contourLinesZ;
@@ -175,6 +183,8 @@ public class TerrainFunction
 	{
 		int nofPoints = terrainParameter.nofTiles + 1;
 
+		Debug.Log("Min: " + minElevation + " Max: " + maxElevation);
+
 		if (minElevation < -1.0f || maxElevation > 1.0f) {
 
 			float[,] elevation = this.Elevation;
@@ -196,14 +206,20 @@ public class TerrainFunction
 		Color32[,] tileColors = new Color32[terrainParameter.nofTiles, terrainParameter.nofTiles];
 		float[,] elevation = this.Elevation;
 
+		float difference = maxElevation - minElevation;
 		for (int v = 0; v < terrainParameter.nofTiles; ++v) {
 			for (int u = 0; u < terrainParameter.nofTiles; ++u) {
+
+
 				if (elevation [u, v] < terrainParameter.seaLevel) {
-					tileColors [u, v] = new Color32 (0, 0, 255, 255);
-				} else if (elevation [u, v] < terrainParameter.seaLevel + 0.4f) {
-					tileColors [u, v] = new Color32 (255, 255, 0, 255);
+					// Sea
+					float t = ((elevation [u, v] - minElevation) / difference) / ((terrainParameter.seaLevel + 1.0f) / 2.0f);
+					tileColors [u, v] = Color32.Lerp (seaColorBottom, seaColorTop, t);
+				} else if (elevation [u, v] < terrainParameter.seaLevel + BeachLevel) {
+					// Beach
+					tileColors [u, v] = Random.ColorHSV(0.15f, 0.16f, 1.0f, 1.0f, 1.0f, 1.0f);
 				} else {
-					tileColors [u, v] = new Color32 (0, 255, 0, 255);
+					tileColors [u, v] = Random.ColorHSV(0.31f, 0.35f, 1.0f, 1.0f, 0.9f, 1.0f);
 				}
 					
 			}
