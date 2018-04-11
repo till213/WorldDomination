@@ -10,18 +10,19 @@ public class TerrainFunction
 	static Color32 seaColorTop = new Color32(0, 0, 255, 255);
 
 	// As measured from sea level
-	const float BeachLevel = 0.1f;
+	const float BeachLevel = 0.15f;
 
 	ContourParameter contourParameter;
+	TerrainParameter terrainParameter;
 	float[,] contourLinesX;
 	float[,] contourLinesZ;
 
-	public float[,] Elevation { get; set; }
+	public float[,] VertexElevations { get; set; }
 	public Color32[,] TileColors { get; set; }
 
 	float minElevation, maxElevation;
 
-	float Evaluate (float x, ContourParameter contourParameter)
+	float Evaluate (float x)
 	{
 		float y = contourParameter.weight1 * (contourParameter.amplitude1 * Mathf.Sin (contourParameter.frequency1 * (x + contourParameter.offset1)))
 			+ contourParameter.weight2 * (contourParameter.amplitude2 * Mathf.Sin (contourParameter.frequency2 * (x + contourParameter.offset2)))
@@ -73,7 +74,7 @@ public class TerrainFunction
 		contourParameter.offset4 = Random.value * Mathf.PI * 2;
 	}
 
-	void CreateContours(TerrainParameter terrainParameter)
+	void CreateContours()
 	{
 		int NofPoints = terrainParameter.nofTiles + 1;
 		float x0 = -Mathf.PI;
@@ -96,21 +97,21 @@ public class TerrainFunction
 
 			float x = x0;
 			for (int u = 0; u < NofPoints; ++u) {
-				contourLinesX [p, u] = Evaluate (x, contourParameter);
+				contourLinesX [p, u] = Evaluate (x);
 				x += dx;
 			} // x
 
 		}
 
 		// Contour lines Z
-		contourLinesZ = new float[nofContourLines, NofPoints];
+		contourLinesZ = new float [nofContourLines, NofPoints];
 		for (int o = 0; o < nofContourLines - 1; ++o) {
 
 			randomiseContour ();
 
 			float z = z0;
 			for (int v = 0; v < NofPoints; ++v) {
-				contourLinesZ[o, v] = Evaluate (z, contourParameter);
+				contourLinesZ [o, v] = Evaluate (z);
 				z += dz;
 			} // z
 
@@ -128,10 +129,10 @@ public class TerrainFunction
 
 	}
 
-	void Elevate(TerrainParameter terrainParameter)
+	void Elevate()
 	{
 		int nofPoints = terrainParameter.nofTiles + 1;
-		float[,] elevation = new float[nofPoints, nofPoints];
+		float[,] vertexElevations = new float[nofPoints, nofPoints];
 		int nofTilesPerPatch = terrainParameter.nofTiles / terrainParameter.nofPatches;
 		int nofContourLines = terrainParameter.nofPatches + 1;
 
@@ -158,7 +159,7 @@ public class TerrainFunction
 							contourLinesX [(o + 2) % nofContourLines, v],
 							s);
 						float y = y1 + y2;
-						elevation [u, v] = y;
+						vertexElevations [u, v] = y;
 						if (y > maxElevation) {
 							maxElevation = y;
 						} else if (y < minElevation) {
@@ -171,55 +172,64 @@ public class TerrainFunction
 
 		// Border lines
 		for (int u = 0; u < nofPoints; ++u) {
-			elevation [u, nofPoints - 1] = elevation [u, 0];
+			vertexElevations [u, nofPoints - 1] = vertexElevations [u, 0];
 		}
 		for (int v = 0; v < nofPoints; ++v) {
-			elevation [nofPoints - 1, v] = elevation [0, v];
+			vertexElevations [nofPoints - 1, v] = vertexElevations [0, v];
 		}
-		this.Elevation = elevation;
+		this.VertexElevations = vertexElevations;
 	}
 
-	void Normalise(TerrainParameter terrainParameter)
+	void Normalise()
 	{
 		int nofPoints = terrainParameter.nofTiles + 1;
 
-		Debug.Log("Min: " + minElevation + " Max: " + maxElevation);
-
 		if (minElevation < -1.0f || maxElevation > 1.0f) {
 
-			float[,] elevation = this.Elevation;
+			float[,] vertexElevations = this.VertexElevations;
 			float max = Mathf.Max (Mathf.Abs (minElevation), Mathf.Abs (maxElevation));
 
 			for (int v = 0; v < nofPoints; ++v) {
 				for (int u = 0; u < nofPoints; ++u) {
-					elevation [u, v] /= max;
+					vertexElevations [u, v] /= max;
 				}
 			}
 
-			this.Elevation = elevation;
+			this.VertexElevations = vertexElevations;
 		}
 
 	}
 
-	void Colorise(TerrainParameter terrainParameter)
+    float Elevation (int s, int t)
+	{
+		float[,] vertexElevations = VertexElevations;
+		float sum = 
+			vertexElevations [s, t] +
+			vertexElevations [(s + 1) % terrainParameter.nofTiles, t] +
+			vertexElevations [(s + 1) % terrainParameter.nofTiles, (t + 1) % terrainParameter.nofTiles] +
+			vertexElevations [s, (t + 1) % terrainParameter.nofTiles];
+		return sum / 4f;
+	}
+
+	void Colorise()
 	{
 		Color32[,] tileColors = new Color32[terrainParameter.nofTiles, terrainParameter.nofTiles];
-		float[,] elevation = this.Elevation;
+		float[,] vertexElevations = this.VertexElevations;
 
 		float difference = maxElevation - minElevation;
-		for (int v = 0; v < terrainParameter.nofTiles; ++v) {
-			for (int u = 0; u < terrainParameter.nofTiles; ++u) {
+		for (int t = 0; t < terrainParameter.nofTiles; ++t) {
+			for (int s = 0; s < terrainParameter.nofTiles; ++s) {
 
-
-				if (elevation [u, v] < terrainParameter.seaLevel) {
+				if (vertexElevations [s, t] < terrainParameter.seaLevel) {
 					// Sea
-					float t = ((elevation [u, v] - minElevation) / difference) / ((terrainParameter.seaLevel + 1.0f) / 2.0f);
-					tileColors [u, v] = Color32.Lerp (seaColorBottom, seaColorTop, t);
-				} else if (elevation [u, v] < terrainParameter.seaLevel + BeachLevel) {
+					float d = ((Elevation (s, t) - minElevation) / difference) / ((terrainParameter.seaLevel + 1.0f) / 2.0f);
+					tileColors [s, t] = Color32.Lerp (seaColorBottom, seaColorTop, d);
+				} else if (vertexElevations [s, t] < terrainParameter.seaLevel + BeachLevel) {
 					// Beach
-					tileColors [u, v] = Random.ColorHSV(0.15f, 0.16f, 1.0f, 1.0f, 1.0f, 1.0f);
+					tileColors [s, t] = Random.ColorHSV(0.15f, 0.16f, 1.0f, 1.0f, 1.0f, 1.0f);
 				} else {
-					tileColors [u, v] = Random.ColorHSV(0.31f, 0.35f, 1.0f, 1.0f, 0.9f, 1.0f);
+					// Land
+					tileColors [s, t] = Random.ColorHSV(0.31f, 0.35f, 1.0f, 1.0f, 0.9f, 1.0f);
 				}
 					
 			}
@@ -230,10 +240,11 @@ public class TerrainFunction
 
 	public void Create(TerrainParameter terrainParameter)
 	{
-		CreateContours (terrainParameter);
-		Elevate (terrainParameter);
-		Normalise (terrainParameter);
-		Colorise (terrainParameter);
+		this.terrainParameter = terrainParameter;
+		CreateContours();
+		Elevate();
+		Normalise();
+		Colorise();
 	}
 
 }
