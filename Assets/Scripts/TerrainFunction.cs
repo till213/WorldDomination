@@ -154,9 +154,9 @@ public class TerrainFunction
 							           t);
 						p1 = ((o - 1) % nofContourLines + nofContourLines) % nofContourLines;
 						float y2 = CubicInterpolate (contourLinesZ [p1, v],
-							contourLinesX [o, v],
-							contourLinesX [o + 1, v],
-							contourLinesX [(o + 2) % nofContourLines, v],
+							contourLinesZ [o, v],
+							contourLinesZ [o + 1, v],
+							contourLinesZ [(o + 2) % nofContourLines, v],
 							s);
 						float y = y1 + y2;
 						vertexElevations [u, v] = y;
