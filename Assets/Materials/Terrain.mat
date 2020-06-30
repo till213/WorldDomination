@@ -4,7 +4,7 @@
 Material:
   serializedVersion: 6
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_Name: Terrain
   m_Shader: {fileID: 4800000, guid: 0e630a756669046d3ace7cb00c9a4dda, type: 3}
